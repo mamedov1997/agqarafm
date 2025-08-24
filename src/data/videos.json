@@ -1,0 +1,18 @@
+[
+  {
+    "id": "intro-001",
+    "title": "AGQARAFM — xoş gəlmisiniz!",
+    "src": "/sample/sample1.mp4",
+    "poster": "/sample/poster1.jpg",
+    "description": "Layihənin qısa təqdimatı.",
+    "duration": "00:20"
+  },
+  {
+    "id": "teaser-002",
+    "title": "Teaser — 2025 YENİLİKLƏR",
+    "src": "/sample/sample2.mp4",
+    "poster": "/sample/poster2.jpg",
+    "description": "Yeniliklərə baxış.",
+    "duration": "00:12"
+  }
+]
