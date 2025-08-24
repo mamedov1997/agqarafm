@@ -6,5 +6,5 @@ import react from '@vitejs/plugin-react'
 // If using a custom domain or root (user/organization site), set base to '/'
 export default defineConfig({
   plugins: [react()],
-  base: '/agqarafm-video-site/'
+  base: '/agqarafm/'
 })
