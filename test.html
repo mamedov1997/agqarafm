@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bürcünü Öyrən</title>
+    <style>
+        /* Ümumi Dizayn */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            color: white;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Input Sahələri */
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus {
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            transform: scale(1.02);
+        }
+
+        /* Düymə */
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(45deg, #ff00cc, #333399);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        /* Nəticə hissəsi (Animasiyalı) */
+        #result {
+            margin-top: 30px;
+            display: none; /* Başlanğıcda gizli */
+        }
+
+        .result-box {
+            animation: popIn 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+
+        .user-name {
+            font-size: 2em;
+            font-weight: bold;
+            background: linear-gradient(to right, #ff9966, #ff5e62);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        .zodiac-sign {
+            font-size: 4em;
+            margin: 10px 0;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .zodiac-name {
+            font-size: 1.5em;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>✨ Sehrli Bürclər ✨</h1>
+        
+        <div class="input-group">
+            <label>Adınız:</label>
+            <input type="text" id="name" placeholder="Adınızı yazın...">
+        </div>
+
+        <div class="input-group">
+            <label>Doğum Tarixi:</label>
+            <input type="date" id="date" onchange="autoSelectZodiac()">
+        </div>
+
+        <div class="input-group">
+            <label>Bürcünüz:</label>
+            <select id="zodiac">
+                <option value="">Seçin və ya tarix daxil edin</option>
+                <option value="Qoç">Qoç ♈</option>
+                <option value="Buğa">Buğa ♉</option>
+                <option value="Əkizlər">Əkizlər ♊</option>
+                <option value="Xərçəng">Xərçəng ♋</option>
+                <option value="Şir">Şir ♌</option>
+                <option value="Qız">Qız ♍</option>
+                <option value="Tərəzi">Tərəzi ♎</option>
+                <option value="Əqrəb">Əqrəb ♏</option>
+                <option value="Oxatan">Oxatan ♐</option>
+                <option value="Oğlaq">Oğlaq ♑</option>
+                <option value="Dolça">Dolça ♒</option>
+                <option value="Balıqlar">Balıqlar ♓</option>
+            </select>
+        </div>
+
+        <button onclick="showMagic()">Göstər</button>
+
+        <div id="result">
+            </div>
+    </div>
+
+    <script>
+        // Tarixə əsasən bürcü tapan funksiya
+        function autoSelectZodiac() {
+            const dateInput = document.getElementById('date').value;
+            if (!dateInput) return;
+
+            const date = new Date(dateInput);
+            const day = date.getDate();
+            const month = date.getMonth() + 1; // Yanvar 0-dan başlayır
+
+            let zodiac = "";
+
+            if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) zodiac = "Qoç";
+            else if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) zodiac = "Buğa";
+            else if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) zodiac = "Əkizlər";
+            else if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) zodiac = "Xərçəng";
+            else if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) zodiac = "Şir";
+            else if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) zodiac = "Qız";
+            else if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) zodiac = "Tərəzi";
+            else if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) zodiac = "Əqrəb";
+            else if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) zodiac = "Oxatan";
+            else if ((month == 12 && day >= 22) || (month == 1 && day <= 19)) zodiac = "Oğlaq";
+            else if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) zodiac = "Dolça";
+            else if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) zodiac = "Balıqlar";
+
+            document.getElementById('zodiac').value = zodiac;
+        }
+
+        // Nəticəni göstərən funksiya
+        function showMagic() {
+            const name = document.getElementById('name').value;
+            const zodiacSelect = document.getElementById('zodiac');
+            const zodiacText = zodiacSelect.value;
+            const resultDiv = document.getElementById('result');
+
+            if (name === "" || zodiacText === "") {
+                alert("Zəhmət olmasa adınızı yazın və tarixi seçin!");
+                return;
+            }
+
+            // Bürc üçün emojini tapmaq (Select-in textindən)
+            const selectedOption = zodiacSelect.options[zodiacSelect.selectedIndex].text;
+            const emoji = selectedOption.split(' ')[1] || '✨'; 
+
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <div class="result-box">
+                    <h2 class="user-name">Salam, ${name}!</h2>
+                    <span class="zodiac-sign">${emoji}</span>
+                    <div class="zodiac-name">${zodiacText}</div>
+                    <p style="margin-top:10px; font-size: 0.9em; opacity: 0.8;">Ulduzlar səninlə olsun! ✨</p>
+                </div>
+            `;
+        }
+    </script>
+
+</body>
+</html>
