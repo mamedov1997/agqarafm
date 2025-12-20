@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmos Oracle - All-In-One Edition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root { --p-color: #00d2ff; --s-color: #9d50bb; --accent: #ffeb3b; }
+        body, html { margin: 0; padding: 0; min-height: 100vh; font-family: 'Segoe UI', sans-serif; background: #000428; color: white; overflow-x: hidden; }
+
+        canvas#stars { position: fixed; top: 0; left: 0; z-index: -1; }
+
+        .container { display: flex; flex-direction: column; align-items: center; padding: 40px 20px; z-index: 10; position: relative; }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 30px;
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        h1 { font-size: 2rem; background: linear-gradient(45deg, var(--p-color), var(--s-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+        h3 { color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-top: 25px; }
+
+        .input-group { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 20px; margin-bottom: 15px; text-align: left; }
+        label { font-size: 0.8rem; color: #ccc; margin-left: 5px; }
+        input { width: 100%; padding: 12px; margin-top: 5px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; outline: none; }
+
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        button { padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; color: white; }
+        .btn-blue { background: linear-gradient(45deg, #00d2ff, #3a7bd5); }
+        .btn-pink { background: linear-gradient(45deg, #ff416c, #ff4b2b); }
+        button:hover { transform: scale(1.03); filter: brightness(1.2); }
+
+        /* Kristal Kürə */
+        .crystal-ball { width: 70px; height: 70px; background: radial-gradient(circle at 30% 30%, #fff, #81e8f6, #055194); border-radius: 50%; margin: 15px auto; cursor: pointer; box-shadow: 0 0 20px var(--p-color); animation: pulse 2s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); box-shadow: 0 0 30px var(--s-color); } }
+
+        /* Nəticə Modalı */
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .result-card { background: #000; border: 2px solid gold; border-radius: 30px; padding: 30px; text-align: center; max-width: 500px; width: 100%; }
+        .badge { display: inline-block; padding: 5px 12px; background: rgba(0,210,255,0.2); color: var(--p-color); border-radius: 15px; font-size: 0.8rem; margin: 5px; border: 1px solid var(--p-color); }
+        
+        .close-btn { margin-top: 20px; background: none; border: 1px solid white; padding: 10px 25px; border-radius: 10px; color: white; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<audio id="magicSound" src="https://www.soundjay.com/misc/sounds/magic-chime-01.mp3"></audio>
+
+<div class="container">
+    <div class="glass-card">
+        <h1>🌌 Cosmos Oracle v2.0</h1>
+        
+        <div class="input-group">
+            <label>Sizin Məlumatlarınız</label>
+            <input type="text" id="name1" placeholder="Adınız">
+            <input type="date" id="date1">
+        </div>
+
+        <div class="input-group">
+            <label>Partnyorun Məlumatları (Sevgi Testi üçün)</label>
+            <input type="text" id="name2" placeholder="Onun Adı">
+            <input type="date" id="date2">
+        </div>
+
+        <div class="btn-grid">
+            <button class="btn-blue" onclick="revealFortune()">Günlük Fal 🔮</button>
+            <button class="btn-pink" onclick="revealLove()">Sevgi Uyğunluğu ❤️</button>
+        </div>
+
+        <h3>🔮 Kristal Kürəyə Soruş</h3>
+        <div class="crystal-ball" onclick="askBall()"></div>
+        <p id="ball-text" style="color: var(--accent); min-height: 20px; font-size: 0.9rem;"></p>
+    </div>
+</div>
+
+<div id="modal">
+    <div class="result-card" id="capture-area">
+        <div id="modal-content"></div>
+        <div id="download-btn-area">
+            <button class="btn-blue" style="margin-top: 20px; font-size: 0.8rem;" onclick="downloadImage()">Şəkli Yadda Saxla 📥</button>
+        </div>
+        <button class="close-btn" onclick="closeModal()">Geri</button>
+    </div>
+</div>
+
+<script>
+    // 1. ULDUZ FONU ANIMASIYASI
+    const canvas = document.getElementById('stars');
+    const ctx = canvas.getContext('2d');
+    let starsArray = [];
+    function init() {
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        for(let i=0; i<150; i++) starsArray.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*2, s:Math.random()*0.5});
+    }
+    function animate() {
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+        starsArray.forEach(s => {
+            ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
+            s.y -= s.s; if(s.y < 0) s.y = canvas.height;
+        });
+        requestAnimationFrame(animate);
+    }
+    init(); animate();
+
+    // 2. DATA VƏ LOGİKA
+    const zodiacs = [
+        { n: "Oğlaq", e: "♑", el: "Torpaq", c: "#3e2723", m: "Ciddi və ambisiyalı! Bu gün karyeranda irəliləyiş var." },
+        { n: "Dolça", e: "♒", el: "Hava", c: "#01579b", m: "Yaradıcılığın coşur! Yeni ideyalar tapacaqsan." },
+        { n: "Balıqlar", e: "♓", el: "Su", c: "#004d40", m: "İntuisiyan çox güclüdür. Daxili səsinə qulaq as." },
+        { n: "Qoç", e: "♈", el: "Od", c: "#b71c1c", m: "Enerjin pikdədir! Yeni başlanğıclar üçün əla gündür." },
+        { n: "Buğa", e: "♉", el: "Torpaq", c: "#1b5e20", m: "Maliyyə uğuru gözlənilir. Səbirli ol, qazanacaqsan." },
+        { n: "Əkizlər", e: "♊", el: "Hava", c: "#fbc02d", m: "Maraqlı xəbər alacaqsan. Ünsiyyət sənə uğur gətirəcək." },
+        { n: "Xərçəng", e: "♋", el: "Su", c: "#37474f", m: "Ailə və sevgi bu gün ön plandadır. Qayğıkeşliyini göstər." },
+        { n: "Şir", e: "♌", el: "Od", c: "#e65100", m: "Diqqət mərkəzindəsən! Liderlik keyfiyyətlərin parlayacaq." },
+        { n: "Qız", e: "♍", el: "Torpaq", c: "#4e342e", m: "Detallar hər şeydir. İntizamlı olsan, qalib gələrsən." },
+        { n: "Tərəzi", e: "♎", el: "Hava", c: "#880e4f", m: "Həyatında balans yaranır. Romantik sürprizlər ola bilər." },
+        { n: "Əqrəb", e: "♏", el: "Su", c: "#4a148c", m: "Dərin dəyişikliklər dövrüdür. Gücünü kəşf et." },
+        { n: "Oxatan", e: "♐", el: "Od", c: "#311b92", m: "Macəra səni çağırır! Yeni biliklər öyrənmək vaxtıdır." }
+    ];
+
+    function getZ(date) {
+        if(!date) return null;
+        const d = new Date(date);
+        const m = d.getMonth()+1, dy = d.getDate();
+        const s = (m<10?'0'+m:m)+'-'+(dy<10?'0'+dy:dy);
+        if(s>="03-21" && s<="04-19") return zodiacs[3];
+        if(s>="04-20" && s<="05-20") return zodiacs[4];
+        if(s>="05-21" && s<="06-20") return zodiacs[5];
+        if(s>="06-21" && s<="07-22") return zodiacs[6];
+        if(s>="07-23" && s<="08-22") return zodiacs[7];
+        if(s>="08-23" && s<="09-22") return zodiacs[8];
+        if(s>="09-23" && s<="10-22") return zodiacs[9];
+        if(s>="10-23" && s<="11-21") return zodiacs[10];
+        if(s>="11-22" && s<="12-21") return zodiacs[11];
+        if(s>="12-22" || s<="01-19") return zodiacs[0];
+        if(s>="01-20" && s<="02-18") return zodiacs[1];
+        return zodiacs[2];
+    }
+
+    function revealFortune() {
+        const name = document.getElementById('name1').value;
+        const date = document.getElementById('date1').value;
+        if(!name || !date) return alert("Məlumat daxil edin!");
+
+        const z = getZ(date);
+        const moonPhases = ["Təzə Ay (Yeni Başlanğıclar)", "Artan Ay", "Bütöv Ay (Böyük Enerji)", "Kiçilən Ay"];
+        const moon = moonPhases[new Date(date).getDate() % 4];
+        let num = 0; for(let i=0; i<name.length; i++) num += name.charCodeAt(i);
+        num = (num % 9) + 1;
+
+        document.body.style.background = `radial-gradient(circle, ${z.c}, #000)`;
+        document.getElementById('magicSound').play();
+        
+        document.getElementById('modal-content').innerHTML = `
+            <h2 style="color:gold;">${name.toUpperCase()}</h2>
+            <div style="font-size:70px;">${z.e}</div>
+            <h3 style="border:none;">${z.n} Bürcü</h3>
+            <div class="badge">Element: ${z.el}</div>
+            <div class="badge">Həyat Yolu: ${num}</div>
+            <div class="badge">Ay: ${moon}</div>
+            <p style="font-style:italic; margin-top:20px; color:#ddd;">"${z.m}"</p>
+        `;
+        document.getElementById('modal').style.display = 'flex';
+    }
+
+    function revealLove() {
+        const n1 = document.getElementById('name1').value, n2 = document.getElementById('name2').value;
+        const d1 = document.getElementById('date1').value, d2 = document.getElementById('date2').value;
+        if(!n1 || !n2 || !d1 || !d2) return alert("Hər iki şəxsin məlumatlarını daxil edin!");
+
+        const z1 = getZ(d1), z2 = getZ(d2);
+        const score = Math.floor(Math.random()*41)+60;
+        document.getElementById('magicSound').play();
+
+        document.getElementById('modal-content').innerHTML = `
+            <h2 style="color:#ff416c;">Sevgi Uyğunluğu</h2>
+            <div style="font-size:50px;">${z1.e} ❤️ ${z2.e}</div>
+            <h1 style="font-size:3.5rem; color:gold;">${score}%</h1>
+            <p>${n1} və ${n2}, ulduzlar sizin üçün möhtəşəm bir bağ vəd edir!</p>
+            <div class="badge">Ruh Uyğunluğu: Yüksək</div>
+        `;
+        document.getElementById('modal').style.display = 'flex';
+    }
+
+    function askBall() {
+        const answers = ["Mütləq bəli!", "Şübhəsiz", "Bəlkə də...", "İndi vaxtı deyil", "Ulduzlar gizli saxlayır", "Daha sonra soruş"];
+        const txt = document.getElementById('ball-text');
+        txt.innerText = "Düşünürəm...";
+        setTimeout(() => txt.innerText = answers[Math.floor(Math.random()*answers.length)], 1200);
+    }
+
+    function downloadImage() {
+        const area = document.getElementById('capture-area');
+        const btn = document.getElementById('download-btn-area');
+        btn.style.visibility = 'hidden';
+        html2canvas(area, {backgroundColor: "#000"}).then(canvas => {
+            const a = document.createElement('a'); a.download = 'cosmos-oracle.png'; a.href = canvas.toDataURL(); a.click();
+            btn.style.visibility = 'visible';
+        });
+    }
+
+    function closeModal() { document.getElementById('modal').style.display = 'none'; document.body.style.background = "#000428"; }
+</script>
+
+</body>
+</html>
