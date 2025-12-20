@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ulduz Falı və Sevgi Uyğunluğu</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #000428;
+            background: radial-gradient(circle, #004e92, #000428);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stars {
+            position: absolute;
+            width: 2px; height: 2px;
+            background: white;
+            box-shadow: 10vw 20vh 2px white, 50vw 40vh 1px white, 80vw 10vh 2px white, 30vw 80vh 1px white, 20vw 60vh 1px white, 70vw 30vh 2px white;
+            animation: moveStars 50s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes moveStars { from {transform: translateY(0)} to {transform: translateY(-1000px)} }
+
+        .container {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            text-align: center;
+            width: 450px; /* Daha geniş */
+            z-index: 5;
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.2);
+        }
+
+        h1 { color: #00d2ff; text-transform: uppercase; letter-spacing: 2px; font-size: 1.4rem; margin-bottom: 20px;}
+        h2 { color: #ffeb3b; font-size: 1.2rem; margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;}
+
+        .input-group { margin: 15px 0; text-align: left; }
+        label { display: block; margin-bottom: 5px; color: #ccc; font-size: 0.9em; }
+        
+        input {
+            width: 100%; padding: 12px; border-radius: 10px; border: none;
+            background: rgba(255,255,255,0.1); color: white; outline: none; box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .button-group { display: flex; gap: 10px; margin-top: 20px; }
+        .button-group button { flex: 1; }
+
+        button {
+            padding: 15px; border: none; border-radius: 10px;
+            background: linear-gradient(45deg, #00d2ff, #9d50bb);
+            color: white; font-weight: bold; cursor: pointer; transition: 0.4s;
+            font-size: 16px;
+        }
+
+        button:hover { letter-spacing: 1px; box-shadow: 0 0 20px #9d50bb; transform: translateY(-2px); }
+
+        /* Fal Ekranı */
+        #result {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 100;
+            flex-direction: column; justify-content: center; align-items: center;
+            padding: 20px; box-sizing: border-box;
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.5) 100%);
+            padding: 40px; border-radius: 30px; border: 1px solid gold;
+            max-width: 550px; text-align: center;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp { from {transform: translateY(100px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
+
+        .daily-desc, .compatibility-msg {
+            font-style: italic; color: #ffeb3b; margin: 20px 0; line-height: 1.6;
+            background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;
+        }
+
+        .stats { display: flex; justify-content: space-around; margin-top: 20px; }
+        .stat-item { font-size: 0.8rem; border: 1px solid #00d2ff; padding: 5px 10px; border-radius: 20px; }
+
+        .compatibility-score {
+            font-size: 4em; font-weight: bold; color: #ff69b4; text-shadow: 0 0 15px #ff69b4;
+            margin-top: 20px;
+            animation: pulse 1.5s infinite alternate;
+        }
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        .close-btn { margin-top: 30px; background: none; border: 1px solid white; width: auto; padding: 10px 40px; }
+    </style>
+</head>
+<body>
+
+    <div class="stars"></div>
+    <audio id="magicSound" src="https://www.soundjay.com/misc/sounds/magic-chime-01.mp3"></audio>
+
+    <div class="container">
+        <h1>✨ Ulduz Falı və Sevgi ✨</h1>
+        
+        <div class="input-group">
+            <label>Sizin Adınız:</label>
+            <input type="text" id="name1" placeholder="Adınız">
+        </div>
+        <div class="input-group">
+            <label>Doğum Tarixiniz:</label>
+            <input type="date" id="date1" onchange="findZodiac('zodiac1')">
+        </div>
+        <div class="input-group">
+            <label>Sizin Bürcünüz:</label>
+            <input type="text" id="zodiac1" readonly placeholder="Avtomatik tapılacaq">
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,0.1); margin: 30px 0;">
+
+        <h2>Sevgi Uyğunluğunu Yoxla ❤️</h2>
+        <div class="input-group">
+            <label>Digər Şəxsin Adı:</label>
+            <input type="text" id="name2" placeholder="Digər şəxsin adı">
+        </div>
+        <div class="input-group">
+            <label>Digər Şəxsin Doğum Tarixi:</label>
+            <input type="date" id="date2" onchange="findZodiac('zodiac2')">
+        </div>
+        <div class="input-group">
+            <label>Digər Şəxsin Bürcü:</label>
+            <input type="text" id="zodiac2" readonly placeholder="Avtomatik tapılacaq">
+        </div>
+
+        <div class="button-group">
+            <button onclick="revealDailyFortune()">Günlük Falıma Bax 🔮</button>
+            <button onclick="checkCompatibility()">Uyğunluğu Yoxla 💕</button>
+        </div>
+    </div>
+
+    <div id="result">
+        <div class="card" id="cardBody"></div>
+        <button class="close-btn" onclick="closeResult()">Bağla</button>
+    </div>
+
+    <script>
+        const zodiacInfo = {
+            "Qoç": { emoji: "♈", color: "Qırmızı", num: "9", msg: "Bu gün enerjiniz pik həddədir. Yeni işə başlamaq üçün əla zamandır!" },
+            "Buğa": { emoji: "♉", color: "Yaşıl", num: "6", msg: "Maliyyə məsələlərində uğur gözlənilir. Səbirli olun, bəhrəsini görəcəksiniz." },
+            "Əkizlər": { emoji: "♊", color: "Sarı", num: "5", msg: "Bu gün maraqlı bir xəbər alacaqsınız. Ünsiyyət qabiliyyətiniz qapıları açacaq." },
+            "Xərçəng": { emoji: "♋", color: "Gümüşü", num: "2", msg: "Ailə və ev işlərinə vaxt ayırmaq üçün əla gündür. İntuisiyanıza güvənin." },
+            "Şir": { emoji: "♌", color: "Qızılı", num: "1", msg: "Diqqət mərkəzində olacaqsınız. Özünüzə olan inamınız hər kəsi heyran edəcək." },
+            "Qız": { emoji: "♍", color: "Qəhvəyi", num: "3", msg: "Detallara diqqət yetirmək sizə qazandıracaq. Sağlamlığınıza vaxt ayırın." },
+            "Tərəzi": { emoji: "♎", color: "Çəhrayı", num: "7", msg: "Həyatınızda harmoniya dövrüdür. Gözlənilməz bir görüş sizi sevindirə bilər." },
+            "Əqrəb": { emoji: "♏", color: "Bordo", num: "8", msg: "Sirli hadisələr baş verə bilər. Daxili gücünüzü kəşf edəcəyiniz bir gündür." },
+            "Oxatan": { emoji: "♐", color: "Bənövşəyi", num: "4", msg: "Səyahət və ya yeni biliklər üçün fürsət yaranacaq. Macəraya hazır olun!" },
+            "Oğlaq": { emoji: "♑", color: "Qara", num: "10", msg: "Karyeranızda yüksəliş görünür. Ciddi qərarlar verməyin tam zamanıdır." },
+            "Dolça": { emoji: "♒", color: "Mavi", num: "11", msg: "Yaradıcılığınız coşur! Dostlarınızla vaxt keçirmək sizə yeni ideyalar verəcək." },
+            "Balıqlar": { emoji: "♓", color: "Yaşıl", num: "12", msg: "Xəyallarınızın arxasınca gedin. Bu gün mənəvi tərəfiniz çox güclüdür." }
+        };
+
+        // Sevgi uyğunluğu datası
+        const compatibilityData = {
+            "Qoç-Qoç": { score: 75, msg: "Ehtiraslı və enerjili bir cütlük, amma inadkarlıq problemlər yarada bilər." },
+            "Qoç-Buğa": { score: 60, msg: "Qoçun sürəti, Buğanın sabitliyi. Öyrənməyə dəyər bir birlik." },
+            "Qoç-Əkizlər": { score: 80, msg: "Çox dinamik və əyləncəli! Bir-birinizdən heç vaxt darıxmayacaqsınız." },
+            "Qoç-Xərçəng": { score: 40, msg: "Fərqli dünyalar. Qoçun impulsivliyi Xərçəngi incidə bilər." },
+            "Qoç-Şir": { score: 90, msg: "Alovlu ehtiras və liderlik. Güclü və parlaq bir münasibət!" },
+            "Qoç-Qız": { score: 30, msg: "Qoçun tələskənliyi Qızın analitikliyini yora bilər." },
+            "Qoç-Tərəzi": { score: 85, msg: "Bir-birinizi tamamlayırsınız. Qoç hərəkət edir, Tərəzi balans gətirir." },
+            "Qoç-Əqrəb": { score: 70, msg: "Cazibədar, amma gərgin bir münasibət. Ehtiras böyükdür." },
+            "Qoç-Oxatan": { score: 95, msg: "Mükəmməl uyğunluq! İkiniz də macəra və azadlığı sevirsiniz." },
+            "Qoç-Oğlaq": { score: 20, msg: "Çox fərqli dəyərlər. Münasibət çətinliklərlə dolu ola bilər." },
+            "Qoç-Dolça": { score: 88, msg: "Ağıllı və sərbəst! Bir-birinizin fərdiliyinə hörmət edirsiniz." },
+            "Qoç-Balıqlar": { score: 50, msg: "Qoç Balıqlar üçün bir az sərt ola bilər, amma empatiya hər şeyi düzəldir." },
+
+            "Buğa-Buğa": { score: 80, msg: "Rahat və sabit bir münasibət. Hər ikiniz də dəyərlərinizə bağlısınız." },
+            "Buğa-Əkizlər": { score: 45, msg: "Buğa sabitlik axtarır, Əkizlər dəyişkənliyi. Çətinliklər ola bilər." },
+            "Buğa-Xərçəng": { score: 90, msg: "Ev və ailəyə bağlı, sevgi dolu bir birlik. Çox uyğun!" },
+            "Buğa-Şir": { score: 55, msg: "Hər ikisi də inadkar. Hörmət olsa, gözəl ola bilər." },
+            "Buğa-Qız": { score: 92, msg: "Pratik, sadiq və etibarlı. Əla bir uyğunluq." },
+            "Buğa-Tərəzi": { score: 65, msg: "Hər ikisi də gözəlliyi sevir. Rahat bir atmosfer yaradırsınız." },
+            "Buğa-Əqrəb": { score: 85, msg: "Güclü cazibə, dərin ehtiras. Çətinliklər olsa da, dəyərlidir." },
+            "Buğa-Oxatan": { score: 35, msg: "Buğa təhlükəsizlik istəyir, Oxatan macəra. Ziddiyyətlər çoxdur." },
+            "Buğa-Oğlaq": { score: 96, msg: "Çox uyğun! Hər ikisi də məqsədyönlü və sadiqdir." },
+            "Buğa-Dolça": { score: 25, msg: "Buğa ənənəvi, Dolça qeyri-adi. Çox fərqli dünyalar." },
+            "Buğa-Balıqlar": { score: 88, msg: "Həssas və romantik bir birlik. Bir-birinizi mükəmməl tamamlayırsınız." },
+
+            "Əkizlər-Əkizlər": { score: 78, msg: "Əyləncəli və intellektual! Heç vaxt darıxdırıcı olmaz." },
+            "Əkizlər-Xərçəng": { score: 50, msg: "Əkizlər azadlığı sevir, Xərçəng isə evə bağlıdır. Fərqlər var." },
+            "Əkizlər-Şir": { score: 82, msg: "Sosial və dinamik bir cütlük. Hər ikiniz də diqqət mərkəzində olmağı sevirsiniz." },
+            "Əkizlər-Qız": { score: 40, msg: "Qızın detalları Əkizlərin dağınıqlığını sevməz." },
+            "Əkizlər-Tərəzi": { score: 90, msg: "Əla uyğunluq! Hər ikiniz də ünsiyyətə və sosiallaşmağa dəyər verirsiniz." },
+            "Əkizlər-Əqrəb": { score: 60, msg: "Maraqlı, amma gərgin. Əqrəb dərinlik, Əkizlər yüngüllük istəyir." },
+            "Əkizlər-Oxatan": { score: 93, msg: "İdeal uyğunluq! Hər ikisi də azadlığı və macəranı sevir." },
+            "Əkizlər-Oğlaq": { score: 30, msg: "Oğlaq ciddi, Əkizlər yüngül. Çətin bir birlik." },
+            "Əkizlər-Dolça": { score: 95, msg: "Əla intellektual uyğunluq. Bir-birinizi çox yaxşı başa düşürsünüz." },
+            "Əkizlər-Balıqlar": { score: 48, msg: "Əkizlər rasional, Balıqlar emosional. Bir-birinizi qəbul etmək vacibdir." },
+
+            "Xərçəng-Xərçəng": { score: 85, msg: "Dərin emosional bağlılıq. Bir-birinizin ehtiyaclarını başa düşürsünüz." },
+            "Xərçəng-Şir": { score: 70, msg: "Şir Xərçəngə güvən verir, Xərçəng Şirə qayğı göstərir. Yaxşı balans." },
+            "Xərçəng-Qız": { score: 88, msg: "Etibarlı və qayğıkeş. Bir-birinizin praktik ehtiyaclarını qarşılayırsınız." },
+            "Xərçəng-Tərəzi": { score: 55, msg: "Hər ikisi də harmoniya axtarır, amma Xərçəng daha emosionaldır." },
+            "Xərçəng-Əqrəb": { score: 98, msg: "Çox güclü və dərin bağlılıq! İdeal ruh yoldaşları." },
+            "Xərçəng-Oxatan": { score: 25, msg: "Xərçəng evdə qalmaq istəyir, Oxatan səyahət. Çox fərqli." },
+            "Xərçəng-Oğlaq": { score: 80, msg: "Zidd qütblər, lakin bir-birinizi tamamlayırsınız. Güclü təməl ola bilər." },
+            "Xərçəng-Dolça": { score: 30, msg: "Xərçəng emosional təhlükəsizlik, Dolça azadlıq axtarır." },
+            "Xərçəng-Balıqlar": { score: 95, msg: "Həssas və romantik bir birlik. Bir-birinizi dərinliyə qədər anlayırsınız." },
+
+            "Şir-Şir": { score: 85, msg: "Qürurlu və ehtiraslı. İkiniz də diqqət mərkəzində olmağı sevirsiniz." },
+            "Şir-Qız": { score: 60, msg: "Şir şoumen, Qız təvazökar. Öyrənməyə dəyər." },
+            "Şir-Tərəzi": { score: 90, msg: "Gözəlliyə və harmoniya! Sosial və parlaq bir cütlük." },
+            "Şir-Əqrəb": { score: 75, msg: "Güclü iradəli, ehtiraslı. Çətin, lakin mükafatlandırıcı bir birlik." },
+            "Şir-Oxatan": { score: 97, msg: "Macəra dolu və optimistik! Bir-birinizi ilhamlandırırsınız." },
+            "Şir-Oğlaq": { score: 40, msg: "Şir dramatik, Oğlaq ciddi. Çətinliklər ola bilər." },
+            "Şir-Dolça": { score: 88, msg: "Fərdiliyinizi qoruyaraq birlik yaradırsınız. Çox maraqlı." },
+            "Şir-Balıqlar": { score: 50, msg: "Şir diqqət, Balıqlar dəstək istəyir. Anlaşma lazımdır." },
+            
+            "Qız-Qız": { score: 70, msg: "Praktik və təmkinli. Bir-birinizin səliqəsini qiymətləndirirsiniz." },
+            "Qız-Tərəzi": { score: 65, msg: "Qızın detalları, Tərəzinin harmoniyası. Yaxşı balans yaradırlar." },
+            "Qız-Əqrəb": { score: 80, msg: "Dərin və analizçi. Bir-birinizin intellektinə hörmət edirsiniz." },
+            "Qız-Oxatan": { score: 30, msg: "Qız qayğıkeş, Oxatan azad. Çox fərqli ehtiyaclar." },
+            "Qız-Oğlaq": { score: 95, msg: "Çox uyğun! Hər ikisi də çalışqan və məsuliyyətlidir." },
+            "Qız-Dolça": { score: 20, msg: "Qız praktik, Dolça xəyalpərəst. Anlaşma çətin ola bilər." },
+            "Qız-Balıqlar": { score: 75, msg: "Zidd qütblər, lakin bir-birinizi tamamlayırsınız. Qız Balıqlara sabitlik verir." },
+
+            "Tərəzi-Tərəzi": { score: 80, msg: "Gözəl və harmonik! Hər ikiniz də sülhü sevirsiniz." },
+            "Tərəzi-Əqrəb": { score: 60, msg: "Tərəzi yüngül, Əqrəb dərin. Çətinliklər olsa da, cazibə var." },
+            "Tərəzi-Oxatan": { score: 88, msg: "Sosial və əyləncəli. Bir-birinizi xoşbəxt edirsiniz." },
+            "Tərəzi-Oğlaq": { score: 40, msg: "Tərəzi sosial, Oğlaq tək. Fərqli prioritetlər." },
+            "Tərəzi-Dolça": { score: 92, msg: "İntellektual və harmonik! Bir-birinizi yaxşı başa düşürsünüz." },
+            "Tərəzi-Balıqlar": { score: 70, msg: "Həssas və romantik. Bir-birinizə dəstək olursunuz." },
+
+            "Əqrəb-Əqrəb": { score: 90, msg: "Dərin və ehtiraslı bir bağlılıq. Çətin, lakin güclü." },
+            "Əqrəb-Oxatan": { score: 50, msg: "Əqrəb sahiblənən, Oxatan azad. Konfliktlər yarana bilər." },
+            "Əqrəb-Oğlaq": { score: 85, msg: "Güclü və məqsədyönlü. Bir-birinizin əzminə hörmət edirsiniz." },
+            "Əqrəb-Dolça": { score: 35, msg: "Əqrəb qısqanc, Dolça sərbəst. Çox fərqli tələblər." },
+            "Əqrəb-Balıqlar": { score: 99, msg: "Ruh yoldaşları! Dərin emosional və intuitiv bağlılıq." },
+
+            "Oxatan-Oxatan": { score: 85, msg: "Macəra dolu və əyləncəli! Heç vaxt darıxmayacaqsınız." },
+            "Oxatan-Oğlaq": { score: 30, msg: "Oxatan azad, Oğlaq ciddi. Çətinliklər var." },
+            "Oxatan-Dolça": { score: 90, msg: "Bənzər düşüncə tərzləri. Bir-birinizi intellektual olaraq stimullaşdırırsınız." },
+            "Oxatan-Balıqlar": { score: 60, msg: "Oxatan optimist, Balıqlar həssas. Anlaşma ilə uyğunluq ola bilər." },
+
+            "Oğlaq-Oğlaq": { score: 80, msg: "Məqsədyönlü və sadiq. Bir-birinizin ambisiyalarını dəstəkləyirsiniz." },
+            "Oğlaq-Dolça": { score: 40, msg: "Oğlaq ənənəvi, Dolça qeyri-adi. Fərqli dəyərlər." },
+            "Oğlaq-Balıqlar": { score: 70, msg: "Oğlaq Balıqlara sabitlik, Balıqlar Oğlağa empatiya verir." },
+
+            "Dolça-Dolça": { score: 88, msg: "Yaradıcı və intellektual. Bir-birinizin fərdiliyinə hörmət edirsiniz." },
+            "Dolça-Balıqlar": { score: 65, msg: "Dolça rasional, Balıqlar emosional. Bir-birinizi tamamlaya bilərsiniz." },
+
+            "Balıqlar-Balıqlar": { score: 90, msg: "Dərin emosional və romantik. Ruh yoldaşları ola bilərsiniz." }
+        };
+
+        function findZodiac(targetId) {
+            const dateInput = document.getElementById(targetId.replace('zodiac', 'date')).value;
+            if (!dateInput) {
+                document.getElementById(targetId).value = "";
+                return;
+            }
+
+            const date = new Date(dateInput);
+            const d = date.getDate(), m = date.getMonth() + 1;
+            let z = "";
+            if ((m == 3 && d >= 21) || (m == 4 && d <= 19)) z = "Qoç";
+            else if ((m == 4 && d >= 20) || (m == 5 && d <= 20)) z = "Buğa";
+            else if ((m == 5 && d >= 21) || (m == 6 && d <= 20)) z = "Əkizlər";
+            else if ((m == 6 && d >= 21) || (m == 7 && d <= 22)) z = "Xərçəng";
+            else if ((m == 7 && d >= 23) || (m == 8 && d <= 22)) z = "Şir";
+            else if ((m == 8 && d >= 23) || (m == 9 && d <= 22)) z = "Qız";
+            else if ((m == 9 && d >= 23) || (m == 10 && d <= 22)) z = "Tərəzi";
+            else if ((m == 10 && d >= 23) || (m == 11 && d <= 21)) z = "Əqrəb";
+            else if ((m == 11 && d >= 22) || (m == 12 && d <= 21)) z = "Oxatan";
+            else if ((m == 12 && d >= 22) || (m == 1 && d <= 19)) z = "Oğlaq";
+            else if ((m == 1 && d >= 20) || (m == 2 && d <= 18)) z = "Dolça";
+            else if ((m == 2 && d >= 19) || (m == 3 && d <= 20)) z = "Balıqlar";
+            document.getElementById(targetId).value = z;
+        }
+
+        function revealDailyFortune() {
+            const name1 = document.getElementById('name1').value;
+            const zodiac1 = document.getElementById('zodiac1').value;
+            if(!name1 || !zodiac1) { alert("Xahiş edirik, adınızı və doğum tarixinizi daxil edin."); return; }
+
+            const data = zodiacInfo[zodiac1];
+            document.getElementById('magicSound').play();
+
+            document.getElementById('cardBody').innerHTML = `
+                <h2 style="margin:0; color:#00d2ff;">${name1}</h2>
+                <div style="font-size: 80px; margin: 10px 0;">${data.emoji}</div>
+                <h3 style="margin:0; text-transform:uppercase;">${zodiac1} Bürcü</h3>
+                <div class="daily-desc">"Bugünkü ulduz proqnozun: ${data.msg}"</div>
+                <div class="stats">
+                    <div class="stat-item">🎨 Rəng: ${data.color}</div>
+                    <div class="stat-item">🍀 Rəqəm: ${data.num}</div>
+                    <div class="stat-item">🔋 Enerji: 95%</div>
+                </div>
+            `;
+            document.getElementById('result').style.display = 'flex';
+        }
+
+        function checkCompatibility() {
+            const name1 = document.getElementById('name1').value;
+            const zodiac1 = document.getElementById('zodiac1').value;
+            const name2 = document.getElementById('name2').value;
+            const zodiac2 = document.getElementById('zodiac2').value;
+
+            if(!name1 || !zodiac1 || !name2 || !zodiac2) {
+                alert("Xahiş edirik, hər iki şəxsin adını və doğum tarixini daxil edin.");
+                return;
+            }
+
+            document.getElementById('magicSound').play();
+
+            let z1 = zodiac1;
+            let z2 = zodiac2;
+
+            // Ardıcıllığı təmin etmək üçün bürcləri əlifba sırası ilə düzəldirik
+            if (z1 > z2) {
+                [z1, z2] = [z2, z1];
+            }
+            const key = `${z1}-${z2}`;
+            const comp = compatibilityData[key] || { score: Math.floor(Math.random() * 40) + 30, msg: "Fərqli fərdlər, lakin hörmət və anlaşma ilə bu əlaqəni inkişaf etdirə bilərsiniz." }; // Default cavab
+
+            document.getElementById('cardBody').innerHTML = `
+                <h2 style="margin:0; color:#ff69b4;">${name1} ❤️ ${name2}</h2>
+                <div class="compatibility-score">${comp.score}%</div>
+                <div class="compatibility-msg">"${comp.msg}"</div>
+                <p style="font-size: 0.9em; opacity: 0.8; margin-top: 20px;">
+                    Ulduzlar sizinlə olsun! Bu proqnoz sadəcə əyləncə üçündür, əsl sevgi hər şeyə qalib gəlir.
+                </p>
+            `;
+            document.getElementById('result').style.display = 'flex';
+        }
+
+        function closeResult() { document.getElementById('result').style.display = 'none'; }
+    </script>
+</body>
+</html>
