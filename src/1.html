@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maliyyə Hesablayıcı</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding: 20px; background-color: #f4f4f9; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 300px; }
+        h2 { text-align: center; color: #333; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        .result { margin-top: 20px; padding-top: 15px; border-top: 2px solid #eee; }
+        .result p { margin: 5px 0; font-size: 18px; font-weight: bold; }
+        .total-val { color: #2c3e50; }
+        button { width: 100%; padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Kassa Hesabatı</h2>
+    
+    <div class="input-group">
+        <label>Sunmi Nəğd:</label>
+        <input type="number" id="sunmiNegd" oninput="hesabla()">
+    </div>
+    
+    <div class="input-group">
+        <label>Sunmi Kart:</label>
+        <input type="number" id="sunmiKart" oninput="hesabla()">
+    </div>
+    
+    <div class="input-group">
+        <label>Nəğd Qaytarma:</label>
+        <input type="number" id="negdQaytarma" oninput="hesabla()">
+    </div>
+    
+    <div class="input-group">
+        <label>Kart Qaytarma:</label>
+        <input type="number" id="kartQaytarma" oninput="hesabla()">
+    </div>
+
+    <div class="result">
+        <p>Yekun Nəğd: <span id="yekunNegd" class="total-val">0</span> AZN</p>
+        <p>Yekun Kart: <span id="yekunKart" class="total-val">0</span> AZN</p>
+        <p>Ümumi Cəm: <span id="umumiCem" class="total-val">0</span> AZN</p>
+    </div>
+
+    <button onclick="sifirla()">Məlumatları Təmizlə</button>
+</div>
+
+<script>
+    // Səhifə açılan kimi köhnə məlumatları yüklə
+    window.onload = function() {
+        const fields = ['sunmiNegd', 'sunmiKart', 'negdQaytarma', 'kartQaytarma'];
+        fields.forEach(field => {
+            if(localStorage.getItem(field)) {
+                document.getElementById(field).value = localStorage.getItem(field);
+            }
+        });
+        hesabla();
+    };
+
+    function hesabla() {
+        // Dəyərləri alırıq
+        let sNegd = parseFloat(document.getElementById('sunmiNegd').value) || 0;
+        let sKart = parseFloat(document.getElementById('sunmiKart').value) || 0;
+        let qNegd = parseFloat(document.getElementById('negdQaytarma').value) || 0;
+        let qKart = parseFloat(document.getElementById('kartQaytarma').value) || 0;
+
+        // Hesablama
+        let netNegd = sNegd - qNegd;
+        let netKart = sKart - qKart;
+        let total = netNegd + netKart;
+
+        // Ekranda göstər
+        document.getElementById('yekunNegd').innerText = netNegd.toFixed(2);
+        document.getElementById('yekunKart').innerText = netKart.toFixed(2);
+        document.getElementById('umumiCem').innerText = total.toFixed(2);
+
+        // Avtomatik yadda saxla
+        localStorage.setItem('sunmiNegd', document.getElementById('sunmiNegd').value);
+        localStorage.setItem('sunmiKart', document.getElementById('sunmiKart').value);
+        localStorage.setItem('negdQaytarma', document.getElementById('negdQaytarma').value);
+        localStorage.setItem('kartQaytarma', document.getElementById('kartQaytarma').value);
+    }
+
+    function sifirla() {
+        if(confirm("Bütün məlumatlar silinsin?")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+</script>
+
+</body>
+</html>
